@@ -7,15 +7,33 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 1) Connect to the database here using the SQLAlchemy's create_engine function
-def connect():
-    global engine # This allows us to use a global variable called engine
-    # A "connection string" is basically a string containing all database credentials together.
-    connection_string = f"postgresql://{os.getenv('gitpod')}:{os.getenv('postgres')}@{os.getenv('localhost')}/{os.getenv('Database_1')}"
-    print("Starting the connection...")
-    engine = create_engine(connection_string).execution_options(autocommit=True)
-    engine.connect()
-    return engine
-connect()
+user = 'gitpod'
+password = 'postgres'
+host = "localhost"
+port = 3306
+database = 'Database_1'
+ 
+# PYTHON FUNCTION TO CONNECT TO THE MYSQL DATABASE AND
+# RETURN THE SQLACHEMY ENGINE OBJECT
+def get_connection():
+    return create_engine(
+        url="mysql+pymysql://{0}:{1}@{2}:{3}/{4}".format(
+            user, password, host, port, database
+        )
+    )
+ 
+ 
+if __name__ == '__main__':
+ 
+    try:
+       
+        # GET THE CONNECTION OBJECT (ENGINE) FOR THE DATABASE
+        engine = get_connection()
+        print(
+            f"Connection to the {host} for user {user} created successfully.")
+    except Exception as ex:
+        print("Connection could not be made due to the following error: \n", ex)
+
 # 2) Execute the SQL sentences to create your tables using the SQLAlchemy's execute function
 engine.execute("""
     CREATE TABLE publishers(
@@ -99,5 +117,5 @@ INSERT INTO book_authors (book_id, author_id) VALUES (10, 1);
 """)
 
 # 4) Use pandas to print one of the tables as dataframes using read_sql function
-result_dataFrame = pd.read_sql("Select * from publishers;", engine)
-print(result_dataFrame)
+result = pd.read_sql("Select * from publishers;", engine)
+print(result)
