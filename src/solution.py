@@ -10,6 +10,7 @@ connection_string = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWOR
 engine = create_engine(connection_string).execution_options(autocommit=True)
 engine.connect()
 
+
 # 2) Execute the SQL sentences to create your tables using the SQLAlchemy's execute function
 engine.execute("""
 CREATE TABLE publishers(

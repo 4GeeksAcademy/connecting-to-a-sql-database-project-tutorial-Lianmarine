@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 import pandas as pd
 from dotenv import load_dotenv
 
+
 # load the .env file variables
 load_dotenv()
 
@@ -10,32 +11,17 @@ load_dotenv()
 user = 'gitpod'
 password = 'postgres'
 host = "localhost"
-port = 3306
-database = 'Database_1'
+port = 5432
+database = 'Database_2'
+
+# Establecer conexión con PostgreSQL utilizando SQLAlchemy
  
-# PYTHON FUNCTION TO CONNECT TO THE MYSQL DATABASE AND
-# RETURN THE SQLACHEMY ENGINE OBJECT
-def get_connection():
-    return create_engine(
-        url="mysql+pymysql://{0}:{1}@{2}:{3}/{4}".format(
-            user, password, host, port, database
-        )
-    )
- 
- 
-if __name__ == '__main__':
- 
-    try:
-       
-        # GET THE CONNECTION OBJECT (ENGINE) FOR THE DATABASE
-        engine = get_connection()
-        print(
-            f"Connection to the {host} for user {user} created successfully.")
-    except Exception as ex:
-        print("Connection could not be made due to the following error: \n", ex)
+engine = create_engine('postgresql://gitpod:postgres@localhost:5432/Database_1').execution_options(autocommit=True)
+engine = engine.connect()
 
 # 2) Execute the SQL sentences to create your tables using the SQLAlchemy's execute function
 engine.execute("""
+    
     CREATE TABLE publishers(
     publisher_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -69,6 +55,7 @@ CREATE TABLE book_authors (
     CONSTRAINT fk_book FOREIGN KEY(book_id) REFERENCES books(book_id) ON DELETE CASCADE,
     CONSTRAINT fk_author FOREIGN KEY(author_id) REFERENCES authors(author_id) ON DELETE CASCADE
 );""")
+
 # 3) Execute the SQL sentences to insert your data using the SQLAlchemy's execute function
 engine.execute("""
 -- publishers
@@ -116,6 +103,7 @@ INSERT INTO book_authors (book_id, author_id) VALUES (10, 1);
 
 """)
 
+engine.commit()
 # 4) Use pandas to print one of the tables as dataframes using read_sql function
 result = pd.read_sql("Select * from publishers;", engine)
 print(result)
